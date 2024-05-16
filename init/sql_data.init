@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Insert sample data
+echo "Inserting sample data..."
+sudo -u postgres psql -d promotion_db -c "
+INSERT INTO promotions (name, description, start_date, end_date, discount_percentage)
+VALUES
+    ('Summer Sale', 'Amazing deals on summer products', '2023-06-01', '2023-08-31', 20.00),
+    ('Holiday Promo', 'Discounts for the holiday season', '2023-11-15', '2023-12-31', 15.50),
+    ('Back to School', 'Savings on school supplies', '2023-08-01', '2023-09-15', 10.75);"
+
+if [ $? -eq 0 ]; then
+    echo "Sample data inserted successfully!"
+else
+    echo "Failed to insert sample data."
+    exit 1
+fi

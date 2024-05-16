@@ -4,6 +4,17 @@
 		"ghcr.io/devcontainers/features/rust:1": {
 			"version": "latest",
 			"profile": "default"
+		},
+        "ghcr.io/itsmechlark/features/postgresql:1": {
+			"version": "latest"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"1YiB.rust-bundle",
+				"GitHub.copilot-chat"
+			]
 		}
 	}
 }

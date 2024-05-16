@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo "Dropping existing database if it exists..."
+sudo -u postgres psql -c "DROP DATABASE IF EXISTS promotion_db;"
+echo "Dropping existing user if it exists..."
+sudo -u postgres psql -c "DROP USER IF EXISTS promotion_user;"
+
+# Create user
+echo "Creating user..."
+sudo -u postgres psql -c "CREATE USER promotion_user WITH PASSWORD 'propassword';"
+# Create database
+echo "Creating database..."
+sudo -u postgres psql -c "CREATE DATABASE promotion_db;"
+
+# Grant privileges
+echo "Granting privileges..."
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE promotion_db TO promotion_user;"

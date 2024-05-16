@@ -1,0 +1,10 @@
+# Set environment variable
+export DATABASE_URL="postgres://promotion_user:propassword@localhost:5432/promotion_db"
+
+service postgresql start
+
+source ./init/sql_user.init
+source ./init/sql_tables.init
+source ./init/sql_data.init
+
+echo "All operations completed successfully."

@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# Create the users table
+sudo -u postgres psql -d promotion_db -c "
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    coins INTEGER NOT NULL DEFAULT 0,
+    nickname VARCHAR(255),  -- Optional nickname
+    public_id SERIAL UNIQUE  -- Auto-incrementing unique public ID
+);
+
+CREATE INDEX idx_users_email ON users (email);
+
+ALTER TABLE users
+    ADD CONSTRAINT unique_public_id UNIQUE (public_id);
+
+ALTER TABLE users OWNER TO promotion_user;
+"
+
+if [ $? -eq 0 ]; then
+    # Print success message in green
+    echo -e "\033[1;32mTable 'users' created successfully!\033[0m"
+else
+    # Print failure message in red
+    echo -e "\033[1;31mFailed to create table 'users'.\033[0m"
+    exit 1
+fi
+
+sudo -u postgres psql -d promotion_db -c "
+CREATE TABLE friends (
+    id SERIAL PRIMARY KEY,
+    user1_id INTEGER NOT NULL,
+    user2_id INTEGER NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user1_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (user2_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE (user1_id, user2_id),
+    CHECK (user1_id < user2_id)
+);
+ALTER TABLE friends OWNER TO promotion_user;
+"
+
+if [ $? -eq 0 ]; then
+    # Print success message in green
+    echo -e "\033[1;32mTable 'friends' created successfully!\033[0m"
+else
+    # Print failure message in red
+    echo -e "\033[1;31mFailed to create table 'friends'.\033[0m"
+    exit 1
+fi
+
+sudo -u postgres psql -d promotion_db -c "
+CREATE TABLE friend_requests (
+    id SERIAL PRIMARY KEY,
+    sender_id INTEGER NOT NULL,
+    receiver_id INTEGER NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR NOT NULL DEFAULT 'pending',
+    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE (sender_id, receiver_id)
+);
+ALTER TABLE friend_requests OWNER TO promotion_user;
+"
+
+if [ $? -eq 0 ]; then
+    # Print success message in green
+    echo -e "\033[1;32mTable 'friend_requests' created successfully!\033[0m"
+else
+    # Print failure message in red
+    echo -e "\033[1;31mFailed to create table 'friend_requests'.\033[0m"
+    exit 1
+fi
